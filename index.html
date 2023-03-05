@@ -63,7 +63,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('userid');
 
-fetch(`http://localhost/secreeet/?userid=${id}`)
+fetch(`https://marknicholasrazon.github.io/secret/index.html?userid=${id}`)
   .then(response => response.json())
   .then(data => {
     const users = data.data;
