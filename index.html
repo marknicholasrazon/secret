@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width"/>
+  <meta charSet="utf-8"/>
+  <title></title>
+  <meta name="robots" content="follow, index"/>
+  <meta content="" name="description"/>
+  <meta property="og:url" content=""/>
+  <link rel="canonical" href=""/>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content=""/>
+  <meta property="og:description" content=""/>
+  <meta property="og:title" content=""/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="@"/>
+  <meta name="twitter:title" content=""/>
+  <meta name="twitter:description" content=""/>
+  <meta name="twitter:image" content="/avatar.png"/>
+  <meta name="next-head-count" content="18"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<main>
+	<form method="post" id="sendForm">
+		<p id="text"></p> 
+		<div class="nav">
+			<div class="flex">
+				<div class="left">
+					<img src="" id="profile">
+				</div>
+				<div class="right">
+					<p id="username">Could not found</p>
+					<h1>send me your secreets!</h1>
+				</div>
+			</div>
+		</div>
+		<div class="message">
+			<textarea name="message" required="" placeholder="send me your secreets"></textarea>
+			<div class="absolute">
+				<div class="fill">
+					<img src="upload.svg">
+					<input type="file" name="file">
+				</div>
+				<div class="fill">
+					<img src="dice.svg" id="dice">
+				</div>
+			</div>
+		</div>
+		<p id="path"></p>
+		<div class="secure">
+			<img src="lock.svg">&nbsp;secreets protected!
+		</div>
+		<button>Send!</button>
+	</form>
+</main>
+
+<script type="text/javascript">
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('userid');
+
+fetch(`http://localhost/secreeet/?userid=${id}`)
+  .then(response => response.json())
+  .then(data => {
+    const users = data.data;
+    const inbox = data.inbox;
+
+    if (users[0].userid != id) {
+      document.querySelector("main").style.display = "none";
+    } else {
+      document.getElementById("username").innerHTML = "@" + users[0].username;
+      document.getElementById('profile').src = users[0].profile;
+      document.title = "@" + users[0].username;
+      document.querySelector("main").style.display = "grid";
+    }
+  })
+  .catch(error => console.error(error));
+
+
+  const fileInput = document.querySelector('input[type="file"]');
+	const pathElement = document.querySelector('#path');
+
+	fileInput.addEventListener('change', (event) => {
+	  const filePath = event.target.value;
+	  pathElement.innerHTML = filePath;
+	});
+
+
+	const form = document.getElementById("sendForm");
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+
+    // send a POST request to the server
+    fetch(`http://localhost/secreeet/send?userid=${id}`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.text())
+      .then((result) => {
+        console.log(result);
+        document.getElementById('text').innerHTML = "successfully sent";
+        document.querySelector('textarea').value = "";
+        document.querySelector('button').style.display = 'none';
+        document.querySelector('#path').innerHTML = "";
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+
+
+
+
+	const button = document.querySelector('button');
+	const textarea = document.querySelector('textarea');
+	textarea.addEventListener('input', function() {
+	  if (textarea.value.length > 0) {
+	    button.style.display = 'block';
+			document.getElementById('text').innerHTML = "";
+	  } else {
+	    button.style.display = 'none';
+	  }
+	});
+	const diceImage = document.getElementById('dice');
+	diceImage.addEventListener('click', function() {
+		button.style.display = 'block';
+	  const messages = [
+	    'do you love ur life?',
+	    'I have covid, any show recomendations?	',
+	    'your favorite part of your body?',
+	    'whats your biggest insecurity',
+	    'you should post more selfies',
+	    'who do you text the most?',
+	    'What is your shoe size?',
+	    'i miss you ',
+	    'your favorite hobby?',
+	    'can we be besties',
+	    'favorite movie?',
+	    "you should get a tattoo",
+	    "one friend ur thankful for...",
+	    "how are you feeling today :)",
+	    "how many hours of sleep you get last night?",
+	    "favorite food?",
+	    "whos the last person you texted?",
+	    "what time did you fall asleep last night?",
+	    "do you have a middle name? "
+	  ];
+	  const randomIndex = Math.floor(Math.random() * messages.length);
+	  const message = messages[randomIndex];
+	  document.getElementById('text').innerHTML = "";
+	  textarea.value = message;
+	});
+</script>
+</body>
+</html>
